@@ -3,43 +3,63 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Ecos del Horizonte</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecos del Horizonte v0.0.3</title>
 
 <style>
 
 body{
-margin:0;
-background:#222;
-overflow:hidden;
-font-family:Arial;
+    margin:0;
+    background:#222;
+    font-family:Arial, sans-serif;
+    text-align:center;
+}
+
+h1{
+    color:white;
 }
 
 canvas{
-display:block;
-margin:auto;
-background:#7bd96d;
-border:4px solid black;
-margin-top:20px;
+    background:#72d86d;
+    border:4px solid black;
+    display:block;
+    margin:10px auto;
 }
 
-#titulo{
-text-align:center;
-font-size:30px;
-color:white;
-margin-top:15px;
+#controles{
+    margin-top:10px;
+}
+
+#controles button{
+    width:70px;
+    height:70px;
+    font-size:30px;
+    margin:5px;
+    border-radius:15px;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div id="titulo">
-🌟 ECOS DEL HORIZONTE 🌟
-</div>
+<h1>🌍 Ecos del Horizonte 0.0.3</h1>
 
 <canvas id="juego" width="480" height="320"></canvas>
+
+<div id="controles">
+
+<button id="arriba">⬆️</button>
+
+<br>
+
+<button id="izquierda">⬅️</button>
+
+<button id="abajo">⬇️</button>
+
+<button id="derecha">➡️</button>
+
+</div>
 
 <script>
 
@@ -47,55 +67,78 @@ const canvas=document.getElementById("juego");
 const ctx=canvas.getContext("2d");
 
 let jugador={
-x:220,
-y:150,
-vel:3
+    x:240,
+    y:160,
+    radio:12,
+    velocidad:3
 };
 
-let teclas={};
+let arriba=false;
+let abajo=false;
+let izquierda=false;
+let derecha=false;
 
-document.addEventListener("keydown",(e)=>{
-teclas[e.key]=true;
-});
+document.getElementById("arriba").ontouchstart=()=>arriba=true;
+document.getElementById("arriba").ontouchend=()=>arriba=false;
 
-document.addEventListener("keyup",(e)=>{
-teclas[e.key]=false;
-});
+document.getElementById("abajo").ontouchstart=()=>abajo=true;
+document.getElementById("abajo").ontouchend=()=>abajo=false;
+
+document.getElementById("izquierda").ontouchstart=()=>izquierda=true;
+document.getElementById("izquierda").ontouchend=()=>izquierda=false;
+
+document.getElementById("derecha").ontouchstart=()=>derecha=true;
+document.getElementById("derecha").ontouchend=()=>derecha=false;
 
 function actualizar(){
 
-if(teclas["ArrowUp"]) jugador.y-=jugador.vel;
+    if(arriba) jugador.y-=jugador.velocidad;
+    if(abajo) jugador.y+=jugador.velocidad;
+    if(izquierda) jugador.x-=jugador.velocidad;
+    if(derecha) jugador.x+=jugador.velocidad;
 
-if(teclas["ArrowDown"]) jugador.y+=jugador.vel;
-
-if(teclas["ArrowLeft"]) jugador.x-=jugador.vel;
-
-if(teclas["ArrowRight"]) jugador.x+=jugador.vel;
-
+    if(jugador.x<jugador.radio) jugador.x=jugador.radio;
+    if(jugador.y<jugador.radio) jugador.y=jugador.radio;
+    if(jugador.x>canvas.width-jugador.radio)
+        jugador.x=canvas.width-jugador.radio;
+    if(jugador.y>canvas.height-jugador.radio)
+        jugador.y=canvas.height-jugador.radio;
 }
 
 function dibujar(){
 
-ctx.clearRect(0,0,480,320);
+ctx.fillStyle="#72d86d";
+ctx.fillRect(0,0,canvas.width,canvas.height);
 
-ctx.fillStyle="#2e8b57";
-ctx.fillRect(0,0,480,320);
+ctx.fillStyle="#8B5A2B";
+ctx.fillRect(40,50,70,60);
 
-ctx.fillStyle="#8B4513";
-ctx.fillRect(40,40,60,60);
-
-ctx.fillStyle="darkgreen";
+ctx.fillStyle="#B22222";
 ctx.beginPath();
-ctx.arc(350,70,18,0,Math.PI*2);
+ctx.moveTo(35,50);
+ctx.lineTo(75,20);
+ctx.lineTo(115,50);
 ctx.fill();
 
+ctx.fillStyle="#8B4513";
+ctx.fillRect(340,70,10,30);
+
+ctx.fillStyle="green";
 ctx.beginPath();
-ctx.arc(390,120,18,0,Math.PI*2);
+ctx.arc(345,60,20,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle="#8B4513";
+ctx.fillRect(390,150,10,30);
+
+ctx.fillStyle="green";
+ctx.beginPath();
+ctx.arc(395,140,20,0,Math.PI*2);
 ctx.fill();
 
 ctx.fillStyle="dodgerblue";
 ctx.beginPath();
-ctx.arc(jugador.x,jugador.y,12,0,Math.PI*2);
+ctx.arc(jugador.x,jugador.y,jugador.radio,0,Math.PI*2);
 ctx.fill();
 
 }
@@ -103,7 +146,6 @@ ctx.fill();
 function juego(){
 
 actualizar();
-
 dibujar();
 
 requestAnimationFrame(juego);
